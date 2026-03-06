@@ -1,17 +1,16 @@
 import "./globals.css";
 import type { Metadata } from "next";
+import { env } from "@/lib/env";
 
 export const metadata: Metadata = {
-  title: "Tipjen Admin",
-  description: "Web admin penjual Tipjen",
+  title: `${env.storeName} Admin`,
+  description: `Dashboard admin cozy untuk mengelola katalog ${env.storeName}`,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="id">
-      <body>
-        <div className="container page-shell">{children}</div>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

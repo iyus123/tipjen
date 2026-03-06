@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { isLoggedIn } from "@/lib/auth";
+import { cookies } from "next/headers";
 
 export async function GET() {
-  return NextResponse.json({ loggedIn: isLoggedIn() });
+  const isLoggedIn = cookies().get("tipjen_admin_session")?.value === "logged_in";
+  return NextResponse.json({ authenticated: isLoggedIn });
 }

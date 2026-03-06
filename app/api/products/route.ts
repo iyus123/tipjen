@@ -1,68 +1,109 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { getAdminSupabase } from "@/lib/supabase";
-import { isLoggedIn } from "@/lib/auth";
+import { ProductPayload } from "@/lib/types";
 
-function unauthorized() {
-  return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+function isAuthed() {
+  return cookies().get("tipjen_admin_session")?.value === "logged_in";
 }
 
 export async function GET() {
-  if (!isLoggedIn()) return unauthorized();
-
-  const supabase = getAdminSupabase();
-  const { data, error } = await supabase.from("products").select("*").order("created_at", { ascending: false });
-
-  if (error) {
-    return NextResponse.json({ message: error.message }, { status: 500 });
+  if (!isAuthed()) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  return NextResponse.json({ products: data ?? [] });
+  const supabase = getAdminSupabase();
+  const { data, error } = await supabase
+    .from("products")
+    .select("*")
+    .order("updated_at", { ascending: false });
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ products: data });
 }
 
 export async function POST(request: Request) {
-  if (!isLoggedIn()) return unauthorized();
+  if (!isAuthed()) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
-  const body = await request.json();
+  const payload = (await request.json()) as ProductPayload;
   const supabase = getAdminSupabase();
-  const { data, error } = await supabase.from("products").insert({
-    name: body.name,
-    category: body.category,
-    price: body.price,
-    stock: body.stock,
-    image_url: body.image_url,
-    description: body.description,
-    is_published: body.is_published,
-  }).select().single();
 
-  if (error) return NextResponse.json({ message: error.message }, { status: 500 });
+  const record = {
+    name: payload.name,
+    description: payload.description || "",
+    category: payload.category || "Umum",
+    price: Number(payload.price || 0),
+    stock: Number(payload.stock || 0),
+    image_url: payload.image_url || "",
+    published: Boolean(payload.published),
+  };
+
+  const { data, error } = await supabase.from("products").insert(record).select("*").single();
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
   return NextResponse.json({ product: data });
 }
 
 export async function PUT(request: Request) {
-  if (!isLoggedIn()) return unauthorized();
+  if (!isAuthed()) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
-  const body = await request.json();
+  const payload = (await request.json()) as ProductPayload;
+
+  if (!payload.id) {
+    return NextResponse.json({ error: "ID produk wajib diisi." }, { status: 400 });
+  }
+
   const supabase = getAdminSupabase();
-  const { data, error } = await supabase.from("products").update({
-    name: body.name,
-    category: body.category,
-    price: body.price,
-    stock: body.stock,
-    image_url: body.image_url,
-    description: body.description,
-    is_published: body.is_published,
-    updated_at: new Date().toISOString(),
-  }).eq("id", body.id).select().single();
+  const { data, error } = await supabase
+    .from("products")
+    .update({
+      name: payload.name,
+      description: payload.description || "",
+      category: payload.category || "Umum",
+      price: Number(payload.price || 0),
+      stock: Number(payload.stock || 0),
+      image_url: payload.image_url || "",
+      published: Boolean(payload.published),
+    })
+    .eq("id", payload.id)
+    .select("*")
+    .single();
 
-  if (error) return NextResponse.json({ message: error.message }, { status: 500 });
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
   return NextResponse.json({ product: data });
 }
 
 export async function DELETE(request: Request) {
-  if (!isLoggedIn()) return unauthorized();
-  const body = await request.json();
+  if (!isAuthed()) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get("id");
+
+  if (!id) {
+    return NextResponse.json({ error: "ID produk tidak ditemukan." }, { status: 400 });
+  }
+
   const supabase = getAdminSupabase();
-  const { error } = await supabase.from("products").delete().eq("id", body.id);
-  if (error) return NextResponse.json({ message: error.message }, { status: 500 });
+  const { error } = await supabase.from("products").delete().eq("id", id);
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
   return NextResponse.json({ ok: true });
 }
