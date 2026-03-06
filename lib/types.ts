@@ -1,24 +1,18 @@
-export type Product = {
-  id: string;
+export type Label = {
+  id: string | number;
   name: string;
-  description: string | null;
-  category: string | null;
-  price: number;
-  stock: number;
-  image_url: string | null;
-  is_published: boolean;
-  tags: string[];
-  created_at?: string;
-  updated_at?: string;
 };
 
-export type ProductPayload = {
+export type Product = {
+  id: string | number;
   name: string;
-  description: string;
-  category: string;
+  description?: string | null;
+  category?: string | null;
   price: number;
   stock: number;
-  image_url: string;
-  is_published: boolean;
-  tags: string[];
+  image?: string | null;
+  image_url?: string | null;
+  is_published?: boolean;
+  published?: boolean;
+  tags?: string[];
 };
