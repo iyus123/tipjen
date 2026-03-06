@@ -28,3 +28,4 @@ Tambahkan environment variables berikut:
 Versi ini menyimpan gambar upload galeri sebagai data URL langsung ke database.
 Ini praktis untuk penggunaan awal dan gambar ukuran kecil-menengah.
 Kalau nanti toko makin besar, sebaiknya upgrade ke Supabase Storage.
+hadeeeh
