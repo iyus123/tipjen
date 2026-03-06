@@ -45,7 +45,7 @@ export default function DashboardClient({
 
   const selectForEdit = (item: Product) => {
     setForm({
-      id: item.id,
+     id: String(item.id),
       name: item.name,
       description: item.description,
       category: item.category,
