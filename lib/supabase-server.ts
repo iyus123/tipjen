@@ -1,8 +1,12 @@
-import { createClient } from "@supabase/supabase-js";
-import { env } from "@/lib/env";
+import { createClient } from '@supabase/supabase-js';
 
-export function getServiceSupabase() {
-  return createClient(env.supabaseUrl, env.supabaseServiceRoleKey, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseUrl || !serviceRoleKey) {
+  throw new Error('Supabase server environment variables are missing.');
 }
+
+export const supabaseServer = createClient(supabaseUrl, serviceRoleKey, {
+  auth: { persistSession: false, autoRefreshToken: false },
+});
