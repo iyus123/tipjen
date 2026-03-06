@@ -16,3 +16,14 @@ export type Product = {
   published?: boolean;
   tags?: string[];
 };
+
+export type ProductPayload = {
+  name: string;
+  description?: string | null;
+  category?: string | null;
+  price: number;
+  stock: number;
+  image_url?: string | null;
+  is_published?: boolean;
+  tags?: string[];
+};
