@@ -1,31 +1,17 @@
 # Tipjen Admin
 
-Web admin terpisah untuk mengelola produk toko Tipjen.
+Web admin terpisah untuk mengelola produk Tipjen. Terhubung ke Supabase yang sama dengan web buyer.
 
 ## Fitur
-- Login admin sederhana dengan password
+- Login admin sederhana via password
 - Tambah, edit, hapus produk
-- Publish / unpublish produk
-- Upload gambar manual dari galeri perangkat
-- Sinkron ke web buyer melalui Supabase yang sama
+- Tampilkan / sembunyikan produk
+- Upload gambar manual dari galeri (disimpan sebagai data URL)
+- Label/tag tersimpan untuk dipakai ulang
+- Dark / light mode
 
-## Menjalankan lokal
-1. `npm install`
-2. copy `.env.example` menjadi `.env.local`
-3. isi semua environment variable
-4. `npm run dev`
-
-## Deploy ke Vercel
-Tambahkan environment variables berikut:
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY`
-- `ADMIN_PASSWORD`
-- `STORE_NAME`
-- `WHATSAPP_NUMBER`
-
-## Catatan upload gambar
-Versi ini menyimpan gambar upload galeri sebagai data URL langsung ke database.
-Ini praktis untuk penggunaan awal dan gambar ukuran kecil-menengah.
-Kalau nanti toko makin besar, sebaiknya upgrade ke Supabase Storage.
-hadeeeh
+## Setup
+1. Salin `.env.example` menjadi `.env.local`
+2. Isi env sesuai project Supabase Anda
+3. Jalankan SQL pada `database/schema.sql`
+4. Jalankan `npm install` lalu `npm run dev`
